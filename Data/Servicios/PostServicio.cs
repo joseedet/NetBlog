@@ -346,12 +346,12 @@ public class PostServicio : IRepositorioBase
                                         PostId = (int)reader["PostId"],
                                         NombreUsuario = reader["NombreUsuario"].ToString(),
                                         ComentarioPadreId = comentarioHijo.ComentarioId,
-                                        ComentarioAbuelo = comment.ComentarioId
+                                        ComentarioAbueloId = comment.ComentarioId
                                     };
-                                    comentarioNietos.Add(comentarioNieto);
+                                    comentariosNietos.Add(comentarioNieto);
                                 }
                                 reader.Close();
-                                comentarioHijo.comentariosHijos = comentariosNietos;
+                                comentarioHijo.ComentariosHijos = comentariosNietos;
                             }
                         }
                     }

@@ -28,7 +28,7 @@ Estado BIT, Token VARCHAR(MAX), FechaExpiracion DATETIME
 )
 --------------------------------------------------------------------------
 
-CREATE PROCEDURE RegistrarAusuario
+CREATE PROCEDURE RegistrarUsuario
 @Nombre VARCHAR(50),
 @Apellidos VARCHAR (50),
 @Correo VARCHAR (100),

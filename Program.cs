@@ -1,8 +1,9 @@
 
 using NetBlog.Data;
-using NetBlog.Data.IRepositorio;
-using NetBlog.Data.Repositorio;
+using NetBlog.Data.Interfaces.IRepositorio;
+using NetBlog.Data.Servicios;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using NetBlog.Data.Interfaces.IUsuario;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton(new Contexto(builder.Configuration.GetConnectionString("Blog")));
-builder.Services.AddTransient<IRepositorio, Repositorio>();
+builder.Services.AddTransient<IRepositorioBase, PostServicio>();
+builder.Services.AddTransient<IUsuario, UsuarioServicio>();
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>

@@ -12,8 +12,38 @@ public class UsuarioServicio : IUsuario
     {
         _contexto = contexto;
     }
-    public void RegistrarUsuario(string nombre, string apellidos, string correo, string contrasenya, int rolId,
-     string nombreUsuario, bool estado, string token, DateTime fechaExpiracion)
+
+    //Activacion cuenta usuario
+    public int ActivarCuenta(string token, DateTime fechaexpiracion)
+    {
+       using (var connection = new SqlConnection(_contexto.Conexion))
+       {
+
+             using(var cmd=new SqlCommand ("ActivarCuenta",connection))
+            {                   
+                
+                cmd.Parameters.AddWithValue("@Token",token);
+                DateTime FechaExpiracion = DateTime.UtcNow.AddMinutes(5);
+                cmd.Parameters.AddWithValue("@FechaExpiracion",FechaExpiracion);
+                connection.Open();           
+                var resultado=cmd.ExecuteNonQuery();
+
+                int activado = Convert.ToInt32(resultado);
+
+                connection.Close();
+
+                return activado;
+
+
+            }
+
+
+       }
+    }
+
+    //Registrar Usuario
+    public void RegistrarUsuario(string nombre, string apellidos, string correo, string contrasenya, 
+     string nombreUsuario,DateTime fechaExpiracion)
     {
        using (var connection = new SqlConnection(_contexto.Conexion))
        {
@@ -21,15 +51,17 @@ public class UsuarioServicio : IUsuario
             connection.Open();
             using(var cmd=new SqlCommand ("RegistrarUsuario",connection))
             {
+                
                 cmd.Parameters.AddWithValue("@Nombre",nombre);
                 cmd.Parameters.AddWithValue("@Apellidos", apellidos);
                 cmd.Parameters.AddWithValue("@Correo", correo);
-                cmd.Parameters.AddWithValue("@Contrasenya",contrasenya);
-                cmd.Parameters.AddWithValue("@RolId",rolId);
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(contrasenya);
+                cmd.Parameters.AddWithValue("@Contrasenya",hashedPassword);               
                 cmd.Parameters.AddWithValue("@NombreUsuario",nombreUsuario);
-                cmd.Parameters.AddWithValue("@Estado",estado);
+                var token = Guid.NewGuid();             
                 cmd.Parameters.AddWithValue("@Token",token);
-                cmd.Parameters.AddWithValue("@FechaExpiracion",fechaExpiracion);
+                DateTime FechaExpiracion = DateTime.UtcNow.AddMinutes(5);
+                cmd.Parameters.AddWithValue("@FechaExpiracion",FechaExpiracion);
 
                 cmd.ExecuteNonQuery();
 
@@ -40,6 +72,7 @@ public class UsuarioServicio : IUsuario
        }
     }
 
+    // Validacion de usuario
     public Usuario ValidarUsuario(string correo)
     {
         throw new NotImplementedException();

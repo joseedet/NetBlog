@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NetBlog.Data;
 using NetBlog.Data.Interfaces.IUsuario;
 using NetBlog.Models;
+using NetBlog.Models.ViewModels;
 
 namespace NetBlog.Controllers;
 
@@ -99,5 +100,16 @@ public class CuentaController : Controller
                 return RedirectToAction("Index", "Home");
         }
         return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+       
+        
     }
 }

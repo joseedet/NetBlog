@@ -20,7 +20,7 @@ public class Usuario
 
     [Required(ErrorMessage="El campo Correo es obligatorio")]
     [StringLength(100,ErrorMessage="El campo Correo debe de tener un máximo {1} carácteres")]
-    [DataType(DataType.EmailAdress)]
+    [DataType(DataType.EmailAddress)]
     public string ? Correo { get; set; }
 
     [Required(ErrorMessage="El campo Contraseña es obligatorio")]
@@ -34,7 +34,7 @@ public class Usuario
     [StringLength(50,ErrorMessage="El campo NombreUsuario debe de tener un máximo {1} carácteres")]
     public string ? NombreUsuario { get; set; }
 
-    public boolean Estado { get; set; }
+    public bool Estado { get; set; }
 
     [Required(ErrorMessage="El campo Token es obligatorio")]
     //[StringLength(50,ErrorMessage="El campo Nombre debe de tener un máximo {1} carácteres")]

@@ -80,7 +80,7 @@ public class PostServicio : IRepositorioBase
         return post;
     }
 
-    public void AgregarComentario(int postId, string comentario, int userId, int? comentarioPadreId)
+    public void AgregarComentario(int postId, string comentario, int ? userId, int? comentarioPadreId)
     {
         using (var connection = new SqlConnection(_contexto.Conexion))
         {

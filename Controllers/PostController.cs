@@ -136,7 +136,7 @@ public class PostController : Controller
     }
 
     [HttpPost]
-    public IActionResult AgregarComentario(int postId, string comentario, int? comentarioPadreId)
+    public IActionResult AgregarComentario(int postId, string comentario, int ? comentarioPadreId)
     {
         try
         {
@@ -151,7 +151,8 @@ public class PostController : Controller
                 userId = parsedUsuarioId;
 
             DateTime FechaPublicacion = DateTime.UtcNow;
-            _postServicio.AgregarComentario(postId, comentario, (int)userId, comentarioPadreId);
+            
+            _postServicio.AgregarComentario(postId, comentario,(int) userId, comentarioPadreId);
 
             return RedirectToAction("Details", "Post", new { id = postId });
         }

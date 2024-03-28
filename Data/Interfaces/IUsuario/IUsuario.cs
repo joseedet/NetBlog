@@ -9,13 +9,15 @@ namespace NetBlog.Data.Interfaces.IUsuario;
 
 public interface IUsuario
 {
-    public void RegistrarUsuario(string nombre,string apellidos,string correo,string contrasenya
-    ,string nombreUsuario,DateTime fechaExpiracion);
+    public void RegistrarUsuario(string ? nombre,string ? apellidos,string ? correo,string ? contrasenya
+    ,string ? nombreUsuario,DateTime ? fechaExpiracion);
 
     public Usuario ValidarUsuario(string correo);
     public int ActivarCuenta(string token, DateTime fechaexpiracion);
-    public bool Login(LoginViewModel login);
-    public void ActualizarToken(string correo,DateTime fechaexpiracion,string Token);
+    //public bool Login(LoginViewModel login);
+    public void ActualizarToken(string correo);
+    public List<Rol> ListarRoles();
+    public Usuario ObtenerUsuarioPorId(int id);
 
  
 }

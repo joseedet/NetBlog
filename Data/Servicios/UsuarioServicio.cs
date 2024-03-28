@@ -1,6 +1,8 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using NetBlog.Data.Interfaces.IUsuario;
 using NetBlog.Models;
 using NetBlog.Models.ViewModels;
@@ -10,8 +12,7 @@ namespace NetBlog.Data.Servicios;
 public class UsuarioServicio : IUsuario
 {
     private readonly Contexto _contexto;
-    public string ? ViewBag;
-    
+    public string? ViewBag;
 
     public UsuarioServicio(Contexto contexto)
     {
@@ -41,110 +42,111 @@ public class UsuarioServicio : IUsuario
         }
     }
 
-    public void ActualizarToken(string correo, DateTime fechaexpiracion, string Token)
+    public void ActualizarToken(string correo)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_contexto.Conexion))
+        {
+            using (var cmd = new SqlCommand("ActualizarToken", connection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Correo", correo);
+                DateTime Fecha = DateTime.UtcNow.AddMinutes(5);
+                cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                var token = Guid.NewGuid();
+                cmd.Parameters.AddWithValue("@Token", token.ToString());
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+
+                //INSERTAR ENVÍO DE CORREO
+            }
+        }
     }
 
-    public bool Login(LoginViewModel model)
+    public List<Rol> ListarRoles()
     {
-        bool passwordMatch = false;
-        try
+         var roles = new List<Rol>();
+
+        using (var connection = new SqlConnection(_contexto.Conexion))
         {
-            using (var connection = new SqlConnection(_contexto.Conexion))
+            connection.Open();
+
+            using (var command = new SqlCommand("ListarRoles", connection))
             {
-                using (var cmd = new SqlCommand("ValidarUsuario", connection))
+                command.CommandType = CommandType.StoredProcedure;
+
+                using (var reader = command.ExecuteReader())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Correo", model.Correo);
-                    //DateTime FechaExpiracion = DateTime.UtcNow.AddMinutes(5);
-                    //cmd.Parameters.AddWithValue("@FechaExpiracion",FechaExpiracion);
-                    connection.Open();
-
-                    try
+                    while (reader.Read())
                     {
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                passwordMatch = BCrypt.Net.BCrypt.Verify(
-                                    model.Contrasenya,
-                                    reader["Contrasenya"].ToString()
-                                );
+                        var rol = new Rol();
 
-                                if (passwordMatch)
-                                {
-                                    DateTime fechaExpiracion = DateTime.UtcNow;
+                       rol.RolId = Convert.ToInt32(reader["PostId"]);
+                       rol.Nombre = Convert.ToString(reader["Nombre"]);
+                        
 
-                                    if (
-                                        !(bool)reader["Estado"]
-                                        && reader["FechaExpiracion"].ToString()
-                                            != fechaExpiracion.ToString()
-                                    )
-                                    {
-                                        if (model.Correo != null)
-                                        {
-                                            ActualizarToken(model.Correo, fechaExpiracion);
-
-                                            ViewBag = "Su cuenta no ha sido activada, se ha enviado un correo de activación verifique su bandeja de correo";
-                                        }
-                                    }
-                                    else if (!(bool)reader["Estado"])
-
-                                        ViewBag = "Su cuenta no ha sido activada, revise su bandeja de correo";
-                                    else
-                                    {
-                                        string ? nombreusuario = reader["NombreUsuario"].ToString();
-                                        int usuarioId = (int)reader["UsuarioId"];
-                                        if(nombreusuario!=null)
-                                        {
-                                            var claims = new List<Claim>()
-                                            {
-
-                                                new Claim(ClaimTypes.NameIdentifier,nombreusuario),
-                                                new Claim("UsuarioId",usuarioId.ToString())
-
-                                            };
-                                            int rolId = (int)reader["RolId"];
-                                            string rolNombre = rolId == 1 ? "Administrador" : "Usuario";
-
-
-                                        }
-                                    }
-                                        
-
-
-                                    
-                                }
-                            }
-                        }
-                        connection.Close();
-                        return passwordMatch;
+                        roles.Add(rol);
                     }
-                    catch (System.Exception ex)
-                    {
-                        connection.Close();
-                        return passwordMatch;
-                    }
-
-                    //return resultado;
+                   //reader.Close();
                 }
             }
         }
-        catch (System.Exception ex)
+        return roles;
+    }
+
+    public Usuario ObtenerUsuarioPorId(int id)
+    {
+        Usuario usuario = new Usuario();
+        using (var connection = new SqlConnection(_contexto.Conexion))
         {
-            return passwordMatch;
+            
+            
+            using (var command = new SqlCommand("ObtenerUsuarioPorId", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@UsuarioId", id);
+                connection.Open();
+
+                var reader = command.ExecuteReader();
+                
+                    if (reader.Read())
+                    {
+                    usuario = new Usuario
+                    {
+
+                        UsuarioId = id,
+                        Nombre =reader["Nombre"].ToString(),
+                        Apellidos=reader["Apellidos"].ToString(),
+                        Correo=reader["Correo"].ToString(),
+                        Contrasenya=reader["Contrasenya"].ToString(),
+                        RolId=(int)reader["RolId"],
+                        NombreUsuario=reader["NombreUsuario"].ToString(),
+                        Estado=(Boolean)reader["Estado"],
+                        Token=reader["Token"].ToString(),
+                        FechaExpiracion=Convert.ToDateTime(reader["FechaExpiracion"])
+
+                    };
+                        
+                       
+                        
+
+                        
+                    }
+                   //reader.Close();
+                
+            }
         }
+        return usuario;
     }
 
     //Registrar Usuario
     public void RegistrarUsuario(
-        string nombre,
-        string apellidos,
-        string correo,
-        string contrasenya,
-        string nombreUsuario,
-        DateTime fechaExpiracion
+        string? nombre,
+        string? apellidos,
+        string? correo,
+        string? contrasenya,
+        string? nombreUsuario,
+        DateTime? fechaExpiracion
     )
     {
         using (var connection = new SqlConnection(_contexto.Conexion))

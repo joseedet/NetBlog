@@ -14,7 +14,7 @@ public interface IRepositorioBase
     public Post ObtenerPostId(int id);
     public List<Post> ObtenerPostCategoria(int id);
     public List <Post> ObtenerPostTitulo(string titulo);
-    public void AgregarComentario(int postId,string comentario,int userId,int ? comentarioPadreId);
+    public void AgregarComentario(int  postId,string comentario,int ? userId,int ? comentarioPadreId);
     public List<Post> ObtenerTodos();
     public List<Comentario> ObtenerComentariosPorPostId(int id);
     public List<Comentario> ObtenerComentariosHijos(List<Comentario> comments);

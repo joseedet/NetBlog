@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
-using MailKit.Net.Smtp;
 using SmtpClient = System.Net.Mail.SmtpClient;
 
 namespace NetBlog.Data;

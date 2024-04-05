@@ -36,18 +36,23 @@ public class CuentaController : Controller
             {
                 DateTime fecha = DateTime.UtcNow;
                 _usuario.RegistrarUsuario(
-                    model.Nombre,
+                    /*model.Nombre,
                     model.Apellidos,
                     model.Correo,
                     model.Contrasenya,                    
                     model.NombreUsuario,
-                    fecha                   
+                    fecha*/ model             
                 
                     
                 );
+                 Email email = new();
+                if(model.Correo!=null)
+                    email.Enviar(model.Correo, model.Token.ToString());
                 return RedirectToAction("Token");
 
                 //Programar envio de correo al usuario.
+
+               
             }
             catch (SqlException ex)
             {

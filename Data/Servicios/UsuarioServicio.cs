@@ -42,6 +42,25 @@ public class UsuarioServicio : IUsuario
         }
     }
 
+    public void ActualizarPerfil(Usuario model)
+    {
+        //Usuario usuario = new Usuario();
+        using (var connection = new SqlConnection(_contexto.Conexion))
+        {
+            using (var cmd = new SqlCommand("ActualizarPerfil", connection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@UsuarioId", model.UsuarioId);
+                cmd.Parameters.AddWithValue("@Nombre", model.Nombre);
+                cmd.Parameters.AddWithValue("@Apellidos", model.Apellidos);
+                cmd.Parameters.AddWithValue("@Correo", model.Correo);
+
+                connection.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+
     public void ActualizarToken(string correo)
     {
         using (var connection = new SqlConnection(_contexto.Conexion))
@@ -59,13 +78,33 @@ public class UsuarioServicio : IUsuario
                 connection.Close();
 
                 //INSERTAR ENVÍO DE CORREO
+
+                Email email = new();
+                if (correo != null)
+                    email.Enviar(correo, token.ToString());
+            }
+        }
+    }
+
+    
+    public void EliminarCuenta(int id)
+    {
+       using (var connection = new SqlConnection(_contexto.Conexion))
+        {
+            connection.Open();
+
+            using (var command = new SqlCommand("EliminarUsuario", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@UsuarioId", id);
+                command.ExecuteNonQuery();
             }
         }
     }
 
     public List<Rol> ListarRoles()
     {
-         var roles = new List<Rol>();
+        var roles = new List<Rol>();
 
         using (var connection = new SqlConnection(_contexto.Conexion))
         {
@@ -81,13 +120,12 @@ public class UsuarioServicio : IUsuario
                     {
                         var rol = new Rol();
 
-                       rol.RolId = Convert.ToInt32(reader["PostId"]);
-                       rol.Nombre = Convert.ToString(reader["Nombre"]);
-                        
+                        rol.RolId = Convert.ToInt32(reader["PostId"]);
+                        rol.Nombre = Convert.ToString(reader["Nombre"]);
 
                         roles.Add(rol);
                     }
-                   //reader.Close();
+                    //reader.Close();
                 }
             }
         }
@@ -99,8 +137,6 @@ public class UsuarioServicio : IUsuario
         Usuario usuario = new Usuario();
         using (var connection = new SqlConnection(_contexto.Conexion))
         {
-            
-            
             using (var command = new SqlCommand("ObtenerUsuarioPorId", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
@@ -108,32 +144,24 @@ public class UsuarioServicio : IUsuario
                 connection.Open();
 
                 var reader = command.ExecuteReader();
-                
-                    if (reader.Read())
-                    {
+
+                if (reader.Read())
+                {
                     usuario = new Usuario
                     {
-
                         UsuarioId = id,
-                        Nombre =reader["Nombre"].ToString(),
-                        Apellidos=reader["Apellidos"].ToString(),
-                        Correo=reader["Correo"].ToString(),
-                        Contrasenya=reader["Contrasenya"].ToString(),
-                        RolId=(int)reader["RolId"],
-                        NombreUsuario=reader["NombreUsuario"].ToString(),
-                        Estado=(Boolean)reader["Estado"],
-                        Token=reader["Token"].ToString(),
-                        FechaExpiracion=Convert.ToDateTime(reader["FechaExpiracion"])
-
+                        Nombre = reader["Nombre"].ToString(),
+                        Apellidos = reader["Apellidos"].ToString(),
+                        Correo = reader["Correo"].ToString(),
+                        Contrasenya = reader["Contrasenya"].ToString(),
+                        RolId = (int)reader["RolId"],
+                        NombreUsuario = reader["NombreUsuario"].ToString(),
+                        Estado = (Boolean)reader["Estado"],
+                        Token = reader["Token"].ToString(),
+                        FechaExpiracion = Convert.ToDateTime(reader["FechaExpiracion"])
                     };
-                        
-                       
-                        
-
-                        
-                    }
-                   //reader.Close();
-                
+                }
+                //reader.Close();
             }
         }
         return usuario;
@@ -141,25 +169,27 @@ public class UsuarioServicio : IUsuario
 
     //Registrar Usuario
     public void RegistrarUsuario(
-        string? nombre,
-        string? apellidos,
-        string? correo,
-        string? contrasenya,
-        string? nombreUsuario,
-        DateTime? fechaExpiracion
+        Usuario model
+    /*string? nombre,
+    string? apellidos,
+    string? correo,
+    string? contrasenya,
+    string? nombreUsuario,
+    DateTime? fechaExpiracion*/
     )
+    // Cambiar parametros por model.
     {
         using (var connection = new SqlConnection(_contexto.Conexion))
         {
             connection.Open();
             using (var cmd = new SqlCommand("RegistrarUsuario", connection))
             {
-                cmd.Parameters.AddWithValue("@Nombre", nombre);
-                cmd.Parameters.AddWithValue("@Apellidos", apellidos);
-                cmd.Parameters.AddWithValue("@Correo", correo);
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(contrasenya);
+                cmd.Parameters.AddWithValue("@Nombre", model.Nombre);
+                cmd.Parameters.AddWithValue("@Apellidos", model.Apellidos);
+                cmd.Parameters.AddWithValue("@Correo", model.Correo);
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Contrasenya);
                 cmd.Parameters.AddWithValue("@Contrasenya", hashedPassword);
-                cmd.Parameters.AddWithValue("@NombreUsuario", nombreUsuario);
+                cmd.Parameters.AddWithValue("@NombreUsuario", model.NombreUsuario);
                 var token = Guid.NewGuid();
                 cmd.Parameters.AddWithValue("@Token", token);
                 DateTime FechaExpiracion = DateTime.UtcNow.AddMinutes(5);

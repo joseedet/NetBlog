@@ -1,31 +1,30 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using NetBlog.Data;
+using NetBlog.Data.Interfaces.IRepositorio;
+using NetBlog.Data.Interfaces.IUsuario;
 using NetBlog.Models;
 
 namespace NetBlog.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    //private readonly Contexto _context;
+    private readonly IRepositorioBase _postServicio;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(IRepositorioBase postServicio)
     {
-        _logger = logger;
+
+        //_context = contexto;
+        _postServicio = postServicio;
     }
-
-    public IActionResult Index()
+    public IActionResult Index(int categoria,string buscar,int? pagina)
     {
+
+
         return View();
+
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+    
 }

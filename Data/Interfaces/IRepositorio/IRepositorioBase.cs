@@ -11,6 +11,7 @@ public interface IRepositorioBase
     public void InsertPost(Post ent);
     public void UpdatePost(Post post);
     public void DeletePost(int id);
+    public Categoria ObtenerNombreCategoria(int categoriaId);
     public Post ObtenerPostId(int id);
     public List<Post> ObtenerPostCategoria(int id);
     public List <Post> ObtenerPostTitulo(string titulo);
@@ -19,6 +20,7 @@ public interface IRepositorioBase
     public List<Comentario> ObtenerComentariosPorPostId(int id);
     public List<Comentario> ObtenerComentariosHijos(List<Comentario> comments);
     public List<Comentario> ObtenerComentariosNietos(List<Comentario> comments);
+
 
 
 

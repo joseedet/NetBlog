@@ -176,7 +176,14 @@ DELETE FROM Categorias Where CategoriaId=@CategoriaId
 END
 
 --------------------------------------------------------------------------------------
-
+CREATE PROCEDURE ObtenerNombreCategoria
+@CategoriaId INT
+AS
+BEGIN
+    SELECT Nombre
+    FROM Categorias
+    WHERE CategoriaId=@CategoriaId
+END
 
 CREATE TABLE Post(
     PostId INT IDENTITY(1,1) PRIMARY KEY,
@@ -258,6 +265,7 @@ BEGIN
 END
 
 ---------------------------------------------------------------------------
+
 
 CREATE PROCEDURE ObtenerPostTitulo
 @Titulo VARCHAR (500)

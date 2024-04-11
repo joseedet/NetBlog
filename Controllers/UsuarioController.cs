@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NetBlog.Data;
 using NetBlog.Data.Interfaces.IUsuario;
+using NetBlog.Data.Servicios;
 using NetBlog.Models;
 
 namespace NetBlog.Controllers;
@@ -17,13 +18,14 @@ namespace NetBlog.Controllers;
 [Route("[controller]")]
 public class UsuarioController : Controller
 {
-    private readonly Contexto _context;
+    //private readonly Contexto _context;
     private readonly IUsuario _usuario;
 
     public UsuarioController(Contexto contexto, IUsuario usuario)
     {
-        _context = contexto;
-        _usuario = usuario;
+            usuario = new UsuarioServicio(contexto);
+            _usuario = usuario;
+    
     }
 
     [Authorize]

@@ -80,7 +80,12 @@ public class PostServicio : IRepositorioBase
         return post;
     }
 
-    public void AgregarComentario(int postId, string comentario, int ? userId, int? comentarioPadreId)
+    public void AgregarComentario(
+        int postId,
+        string comentario,
+        int? userId,
+        int? comentarioPadreId
+    )
     {
         using (var connection = new SqlConnection(_contexto.Conexion))
         {
@@ -205,14 +210,16 @@ public class PostServicio : IRepositorioBase
                 {
                     while (reader.Read())
                     {
-                        posts.Add(new Post
-                        {
-                            PostId = (int)reader["PostId"],
-                            Titulo = (string)reader["Titulo"],
-                            Contenido = reader["Contenido"].ToString(),
-                            CategoriaId = (int)reader["CategoriaId"],
-                            FechaCreacion = (DateTime)reader["FechaCreacion"]
-                        });
+                        posts.Add(
+                            new Post
+                            {
+                                PostId = (int)reader["PostId"],
+                                Titulo = (string)reader["Titulo"],
+                                Contenido = reader["Contenido"].ToString(),
+                                CategoriaId = (int)reader["CategoriaId"],
+                                FechaCreacion = (DateTime)reader["FechaCreacion"]
+                            }
+                        );
 
                         //posts.Add(post);
                     }
@@ -360,5 +367,35 @@ public class PostServicio : IRepositorioBase
         }
 
         return comments;
+    }
+
+    public Categoria ObtenerNombreCategoria(int categoriaId)
+    {
+        Categoria categoria = new Categoria();
+
+        using (var connection = new SqlConnection(_contexto.Conexion))
+        {
+            connection.Open();
+
+            using (var command = new SqlCommand("ObtenerPostCategoria", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@CategoriaId", categoriaId);
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        categoria = new Categoria
+                        {
+                            CategoriaId = (int)reader["CategoriaId"],
+                            Nombre = (string)reader["Nombre"],
+                            
+                        };
+                    }
+                    reader.Close();
+                }
+            }
+        }
+        return categoria;
     }
 }

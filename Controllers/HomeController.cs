@@ -12,12 +12,15 @@ public class HomeController : Controller
 {
     //private readonly Contexto _context;
     private readonly IRepositorioBase _postServicio;
+    private readonly Contexto _contexto;
 
-    public HomeController(IRepositorioBase postServicio)
+    public HomeController(IRepositorioBase postServicio, Contexto contexto)
     {
 
-        //_context = contexto;
-        _postServicio = postServicio;
+        _context = contexto;
+         postServicio=new PostServicio(_contexto);
+        _postServicio=postServicio;
+        
     }
     public IActionResult Index(int ? categoria,string buscar,int? pagina)
     {

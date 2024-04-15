@@ -1,3 +1,4 @@
+using System.Resources;
 using System.Data;
 using System.Data.SqlClient;
 using System.Security.Claims;
@@ -130,6 +131,45 @@ public class UsuarioServicio : IUsuario
             }
         }
         return roles;
+    }
+
+    public List<Usuario> ListarUsuarios()
+    {
+        //throw new NotImplementedException();
+        var usuarios = new List<Usuario>();
+
+        using (var connection = new SqlConnection(_contexto.Conexion))
+        {
+            connection.Open();
+
+            using (var command = new SqlCommand("ListarUsuarios", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var usuario = new Usuario();
+
+                        usuario.UsuarioId = Convert.ToInt32(reader["UsuarioId"]);
+                        usuario.Nombre = Convert.ToString(reader["Nombre"]);
+                        usuario.Apellidos = reader["Apellidos"].ToString();
+                        usuario.Correo = reader["Correo"].ToString();
+                        usuario.RolId = (int)reader["RolId"];
+                        usuario.NombreUsuario = reader["NombreUsuario"].ToString();
+                        usuario.Estado = (Boolean)reader["Estado"];
+                        usuario.Token = reader["Token"].ToString();
+                        usuario.FechaExpiracion = Convert.ToDateTime(reader["FechaExpiracion"]);
+
+                        usuarios.Add(usuario);
+                    }
+                    //reader.Close();
+                }
+            }
+        }
+        return usuarios;
+
     }
 
     public Usuario ObtenerUsuarioPorId(int id)

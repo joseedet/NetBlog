@@ -1,8 +1,7 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using NetBlog.Data;
 using NetBlog.Data.Interfaces.IRepositorio;
-using NetBlog.Data.Interfaces.IUsuario;
+using NetBlog.Data.Servicios;
 using NetBlog.Models;
 using X.PagedList;
 
@@ -17,7 +16,7 @@ public class HomeController : Controller
     public HomeController(IRepositorioBase postServicio, Contexto contexto)
     {
 
-        _context = contexto;
+        _contexto = contexto;
          postServicio=new PostServicio(_contexto);
         _postServicio=postServicio;
         
@@ -42,7 +41,7 @@ public class HomeController : Controller
         int pageSize = 6;
         int pageNumber = (pagina ?? 1);
 
-        string descripcioncategoria = !string.IsNullOrEmpty(nombreCategoria.ToString()) ? _postServicio.ObtenerNombreCategoria((int)categoria).ToString() : "Todas las denas";
+        string ? descripcioncategoria = !string.IsNullOrEmpty(nombreCategoria.ToString()) ? _postServicio.ObtenerNombreCategoria((int)categoria).ToString() : "Todas las denas";
 
         ViewBag.CategoriaDescripcion = descripcioncategoria;
         return View(post.ToPagedList(pageNumber,pageSize));

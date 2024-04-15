@@ -28,6 +28,13 @@ Estado BIT, Token VARCHAR(MAX), FechaExpiracion DATETIME
 )
 --------------------------------------------------------------------------
 
+CREATE PROCEDURE ListarUsuarios
+AS BEGIN
+
+SELECT * FROM Usuarios
+
+END
+-------------------------------------------------------
 CREATE PROCEDURE ObtenerUsuarioPorId
 @UsuarioId INT
 

@@ -21,5 +21,5 @@ public interface IUsuario
     public void ActualizarPerfil(Usuario model);
     public void EliminarCuenta(int id);
 
- 
+    public List<Usuario> ListarUsuarios();
 }

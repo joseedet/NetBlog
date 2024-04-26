@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NetBlog.Data;
 using NetBlog.Data.Interfaces.IUsuario;
 using NetBlog.Data.Servicios;
@@ -25,18 +26,17 @@ public class AdminUsuarioController : Controller
 
 
         var usuarios = _usuario.ListarUsuarios();
+  
 
         if(!String.IsNullOrEmpty(buscar))
                usuarios = usuarios.Where(u => u.Correo != null && u.Correo.Contains(buscar) ||
             u.NombreUsuario != null && u.NombreUsuario.Contains(buscar)).ToList();
 
         usuarios = usuarios.OrderBy(u => u.NombreUsuario).ToList();
-        List<SelectListItem> roles= usuarios
+        List<SelectListItem> roles= _usuario.ListarRoles().Select();
 
 
     }
-
-
 
 
 }

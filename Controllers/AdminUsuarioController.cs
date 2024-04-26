@@ -1,9 +1,12 @@
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Mime;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NetBlog.Data;
 using NetBlog.Data.Interfaces.IUsuario;
 using NetBlog.Data.Servicios;
+using X.PagedList;
 
 namespace NetBlog.Controllers;
 
@@ -33,7 +36,24 @@ public class AdminUsuarioController : Controller
             u.NombreUsuario != null && u.NombreUsuario.Contains(buscar)).ToList();
 
         usuarios = usuarios.OrderBy(u => u.NombreUsuario).ToList();
-        List<SelectListItem> roles= _usuario.ListarRoles().Select();
+        List<SelectListItem> roles= _usuario.ListarRoles().Select(r=>new SelectListItem
+        
+          {
+            Value=r.RolId,
+            Text=r.Nombre
+
+          }       
+        
+        ).TolList();
+        ViewBag.Roles=roles;
+
+        int pageSize=10;
+        int pageNumber=(pagina ?? 1 );
+        var usuariospaginados=usuarios.ToPagedList(pageNumber,pageSize);  
+
+        return View(usuariospaginados);
+
+
 
 
     }
